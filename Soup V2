@@ -1,0 +1,64 @@
+import re
+from bs4 import BeautifulSoup
+
+def parse_email(filepath):
+    # Read the HTML from the file
+    with open(filepath, 'r') as f:
+        html = f.read()
+
+    #Make the HTML text lowercase
+    html = html.lower()
+
+    # Use Beautiful Soup to parse the HTML
+    soup = BeautifulSoup(html, 'html.parser')
+
+    
+
+    # Search for the shipping number
+    shipping_number = None
+    shipping_number_patterns = ['tracking number', 'shipping number', 'tracking']
+    for pattern in shipping_number_patterns: 
+        shipping_number = soup.find(string=re.compile(pattern))
+        if shipping_number:
+            shipping_number = shipping_number.findNext('td').text
+            break
+    if not shipping_number:
+        shipping_number = ('Shipping number not found')
+
+    # Search for the shipping company
+    shipping_company = None
+    shipping_company_names = ['usps', 'amazon', 'ups', 'fedex', "dhl"]
+    for name in shipping_company_names:
+        shipping_company = soup.find(string=re.compile(name))
+        if shipping_company:
+            shipping_company = name
+            break
+    if not shipping_company:
+         shipping_company = ('Shipping company not found')
+
+    # Search for the expected delivery date
+    expected_delivery = None
+    expected_delivery_patterns = ['expected delivery', 'estimated delivery', 'delivery date', 'date', 'delivery']
+    for pattern in expected_delivery_patterns:
+        expected_delivery = soup.find(string=re.compile(pattern))
+        if expected_delivery:
+            expected_delivery = expected_delivery.findNext('td').text
+            break
+    if not expected_delivery:
+        expected_delivery = ('Expected delivery date not found')
+
+    # Search for the order number
+    order_number = None
+    order_number_patterns = ['order Number', 'order ID', 'order', 'order NUMBER:']
+    for pattern in order_number_patterns:
+        order_number = soup.find(string=re.compile(pattern))
+        if order_number:
+            order_number = order_number.findNext('td').text
+            break
+    if not order_number:
+        order_number = ('Order number not found')
+    
+    return shipping_number, shipping_company, expected_delivery, order_number
+
+
+print(parse_email('/Users/User/Desktop/test.txt'))
