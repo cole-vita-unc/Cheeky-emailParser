@@ -15,3 +15,9 @@ pip3 install -r requirements.txt
 ```
 python3 Parser.py
 ```
+
+# Copy newly downloaded packages into requirements.txt
+
+```
+pip freeze > requirements.txt
+```
